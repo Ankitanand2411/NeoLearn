@@ -39,7 +39,8 @@ NeoLearn is an intelligent, adaptive learning platform that leverages **Groq-pow
 - Python 🐍  
 - Flask 🌐 (API layer)  
 - LangChain 🧱  
-- Groq API (LLaMA 3.1) 🚀  
+- Groq API (LLaMA 3.1) 🚀
+- sensay api keys  
 
 ### ☁️ Tools & Hosting
 - **Vercel** – Frontend Deployment  
