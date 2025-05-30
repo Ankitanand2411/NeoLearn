@@ -37,7 +37,7 @@ NeoLearn is an intelligent, adaptive learning platform that leverages **Groq-pow
 
 ### 🧠 Backend
 - Node js 
-- LangChain 🧱  
+- Supabase
 - Groq API (LLaMA 3.1) 🚀
 
 ### ☁️ Tools & Hosting
