@@ -259,7 +259,7 @@ const Settings = () => {
               <div className="flex items-center justify-center space-x-6 text-sm text-blue-100">
                 <span>© 2024 NeoLearn</span>
                 <span>•</span>
-                <span>Made with ❤️ for learners</span>
+                <span>Made with 🤍 from Lanzers</span>
               </div>
             </CardContent>
           </Card>
