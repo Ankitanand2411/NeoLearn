@@ -257,8 +257,8 @@ const Settings = () => {
                 Your AI-powered learning companion
               </p>
               <div className="flex items-center justify-center space-x-6 text-sm text-blue-100">
-                <span>© 2024 NeoLearn</span>
-                <span>•</span>
+                <span>© 2025 Lanzers</span>
+          
                 <span>Made with 🤍 from Lanzers</span>
               </div>
             </CardContent>
