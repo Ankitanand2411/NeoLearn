@@ -132,15 +132,15 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
     ].map(extractVideoId);
   
     const trigonometryIntermediateVideos = [
-      'https://www.youtube.com/playlist?list=PLJrGBqPcwwlo4TxEycVwRmVSjhamRp0Z1',
+      'https://youtu.be/v4eUxyMip0c?si=4ZlDhyfgzglew3dE',
       'https://www.youtube.com/watch?v=y3eqCllxeAY',
       'https://www.youtube.com/watch?v=i3bjEOA5_zc'
     ].map(extractVideoId);
   
     const trigonometryAdvancedVideos = [
       'https://www.youtube.com/watch?v=IoJqx9j1pYc',
-      'https://www.youtube.com/playlist?list=PLlP3eBpfUWxp_ZI8eWDVUNE2CCiwP-kzY',
-      'https://www.youtube.com/playlist?list=PL3HIaqKrPwFWhXmaprNu7pr1IVt-Nfaku'
+      'https://youtu.be/uXw6XsDe8j4?si=aAH_Y2MratWircKn',
+      'https://youtu.be/Cl0j_7MwtUU?si=AgyIokCU8ojBbOan'
     ].map(extractVideoId);
   
     // Linear Algebra videos
