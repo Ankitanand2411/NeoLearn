@@ -28,7 +28,6 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  // Determine default level based on user mastery
   const getDefaultLevel = (mastery: number) => {
     if (mastery === 0) return 'beginner';
     if (mastery < 0.3) return 'beginner';
@@ -40,9 +39,6 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
     console.log('useEffect triggered with:', { topicTitle, userMasteryLevel });
     const defaultLevel = getDefaultLevel(userMasteryLevel);
     setSelectedLevel(defaultLevel);
-    
-    // Force a new search whenever the topic or user mastery changes
-    // This ensures we get a new video when navigating between topics
     setVideoRecommendation(null);
     setHasSearched(false);
     
@@ -52,9 +48,7 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
     }, 100);
   }, [topicTitle, userMasteryLevel]);
 
-  // Add fallback videos for different levels
   const getFallbackVideo = (level: string) => {
-    // Randomly select one of the three videos for each level
     const getRandomVideo = (videos: string[]) => {
       const randomIndex = Math.floor(Math.random() * videos.length);
       return videos[randomIndex];
@@ -174,46 +168,14 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
     
     try {
       console.log('Searching for video:', { topic: topicTitle, level });
-      
-      // Skip the API call and directly use our fallback videos
-      // This ensures we always use our custom videos
       throw new Error('Using direct fallback videos');
-      
-      /* Original code commented out
-      const { data, error } = await supabase.functions.invoke('search-youtube-videos', {
-        body: {
-          topic: topicTitle,
-          level: level
-        }
-      });
-  
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw error;
-      }
-  
-      console.log('Video search response:', data);
-  
-      if (data.success && data.recommendation) {
-        setVideoRecommendation(data.recommendation);
-        
-        if (data.fallback) {
-          // No toast message for fallback content
-        } else {
-          toast.success('🎥 Video recommendation loaded!');
-        }
-      } else {
-        throw new Error(data.error || 'Failed to get video recommendation');
-      }
-      */
+    
     } catch (error) {
       console.error('Error searching video:', error);
       
       // Use our custom fallback videos instead of showing error
       const fallbackVideoId = getFallbackVideo(level);
       console.log('Using fallback video ID:', fallbackVideoId);
-      
-      // Create a new video recommendation with the fallback video ID
       const fallbackVideo = {
         title: `${topicTitle} - Educational Tutorial (${level})`,
         videoId: fallbackVideoId,
