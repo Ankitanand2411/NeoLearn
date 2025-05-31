@@ -121,6 +121,45 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
       'https://www.youtube.com/watch?v=fGFh-LHD874',
       'https://www.youtube.com/watch?v=oSRRXm-N0Jg'
     ].map(extractVideoId);
+
+    
+    // Trigonometry videos
+    const trigonometryBeginnerVideos = [
+      'https://www.youtube.com/watch?v=Jsiy4TxgIME',
+      'https://www.youtube.com/watch?v=PUB0TaZ7bhA',
+      'https://www.youtube.com/watch?v=oG_ZbhyLkgE'
+    ].map(extractVideoId);
+  
+    const trigonometryIntermediateVideos = [
+      'https://www.youtube.com/playlist?list=PLJrGBqPcwwlo4TxEycVwRmVSjhamRp0Z1',
+      'https://www.youtube.com/watch?v=y3eqCllxeAY',
+      'https://www.youtube.com/watch?v=i3bjEOA5_zc'
+    ].map(extractVideoId);
+  
+    const trigonometryAdvancedVideos = [
+      'https://www.youtube.com/watch?v=IoJqx9j1pYc',
+      'https://www.youtube.com/playlist?list=PLlP3eBpfUWxp_ZI8eWDVUNE2CCiwP-kzY',
+      'https://www.youtube.com/playlist?list=PL3HIaqKrPwFWhXmaprNu7pr1IVt-Nfaku'
+    ].map(extractVideoId);
+  
+    // Linear Algebra videos
+    const linearAlgebraBeginnerVideos = [
+      'https://www.youtube.com/watch?v=R3VlD0ohKwc',
+      'https://www.youtube.com/playlist?list=PLgKTLlHQn950Xm27KxcsX7Dr9Fxv_-gEi',
+      'https://www.youtube.com/watch?v=2u_jAXxgG98'
+    ].map(extractVideoId);
+  
+    const linearAlgebraIntermediateVideos = [
+      'https://www.youtube.com/watch?v=lHcs9M2i5c8',
+      'https://www.youtube.com/watch?v=7UJ4CFRGd-U',
+      'https://www.youtube.com/watch?v=TgKwz5Ikpc8'
+    ].map(extractVideoId);
+  
+    const linearAlgebraAdvancedVideos = [
+      'https://www.youtube.com/watch?v=VY_jdKkrs8s',
+      'https://www.youtube.com/watch?v=G-1HNnxb0WE',
+      'https://www.youtube.com/playlist?list=PL221E2BBF13BECF6C'
+    ].map(extractVideoId);
   
     // Determine which topic's videos to use
     let beginnerVideos, intermediateVideos, advancedVideos;
@@ -137,6 +176,16 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
       beginnerVideos = quadraticBeginnerVideos;
       intermediateVideos = quadraticIntermediateVideos;
       advancedVideos = quadraticAdvancedVideos;
+    } else if (topicTitle.toLowerCase().includes('trigonometry')) {
+      console.log('Using Trigonometry videos');
+      beginnerVideos = trigonometryBeginnerVideos;
+      intermediateVideos = trigonometryIntermediateVideos;
+      advancedVideos = trigonometryAdvancedVideos;
+    } else if (topicTitle.toLowerCase().includes('linear algebra')) {
+      console.log('Using Linear Algebra videos');
+      beginnerVideos = linearAlgebraBeginnerVideos;
+      intermediateVideos = linearAlgebraIntermediateVideos;
+      advancedVideos = linearAlgebraAdvancedVideos;
     } else {
       // Default to algebra videos for any other topic
       console.log('Using Algebra videos (default)');
