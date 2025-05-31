@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -7,8 +6,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Helper to extract JSON safely from LLM response
+function extractJsonFromText(text: string): any {
+  const jsonStart = text.indexOf('{');
+  const jsonEnd = text.lastIndexOf('}');
+  if (jsonStart === -1 || jsonEnd === -1) {
+    throw new Error("No JSON object found in text");
+  }
+  const jsonString = text.slice(jsonStart, jsonEnd + 1);
+  return JSON.parse(jsonString);
+}
+
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -38,14 +47,14 @@ serve(async (req) => {
       }
 
       const prompt = `Generate a ${level} difficulty multiple-choice question on the topic: ${topic}.
-        The question should have exactly 4 options, with one correct answer.
-        Return your response in JSON format like this:
+The question should have exactly 4 options, with one correct answer.
+Return your response in JSON format like this:
 
-        {
-            "question": "<question text>",
-            "options": ["option1", "option2", "option3", "option4"],
-            "correct_answer": "<correct option>"
-        }`
+{
+  "question": "<question text>",
+  "options": ["option1", "option2", "option3", "option4"],
+  "correct_answer": "<correct option>"
+}`
 
       const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -62,14 +71,13 @@ serve(async (req) => {
       })
 
       const groqData = await groqResponse.json()
-      console.log('GROQ Response:', groqData)
+      const rawContent = groqData.choices?.[0]?.message?.content?.trim()
+      console.log('GROQ Question Raw:', rawContent)
 
-      if (!groqData.choices?.[0]?.message?.content) {
-        throw new Error('Invalid response from GROQ API')
-      }
+      if (!rawContent) throw new Error('Invalid response from GROQ API')
 
-      const questionData = JSON.parse(groqData.choices[0].message.content.trim())
-      
+      const questionData = extractJsonFromText(rawContent)
+
       return new Response(
         JSON.stringify({ 
           success: true, 
@@ -82,15 +90,22 @@ serve(async (req) => {
 
     if (action === 'evaluate_answer') {
       const prompt = `Question: ${question}
-        Student Answer: ${answer}
-        Topic: ${topic}
+Student Answer: ${answer}
+Topic: ${topic}
 
-        Evaluate this answer and give:
-        1. A score between 0 and 1
-        2. Brief feedback
-        3. Correction if needed
+Evaluate this answer and give:
+1. A score between 0 and 1
+2. Brief feedback
+3. Correction if needed
+4. A boolean is_correct field: true if the answer is correct, false otherwise
 
-        Return only JSON like this: {"score": 0.8, "feedback": "Good job!", "correction": "None needed"}`
+Return only JSON like this:
+{
+  "score": 0.8,
+  "feedback": "Good job!",
+  "correction": "None needed",
+  "is_correct": true
+}`
 
       const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -107,10 +122,19 @@ serve(async (req) => {
       })
 
       const groqData = await groqResponse.json()
-      const evaluation = JSON.parse(groqData.choices[0].message.content.trim())
+      const rawContent = groqData.choices?.[0]?.message?.content?.trim()
+      console.log('GROQ Evaluation Raw:', rawContent)
 
-      // Update mastery level
-      const isCorrect = evaluation.score >= 0.7
+      let evaluation = { score: 0, feedback: "Could not evaluate", correction: "N/A", is_correct: false }
+
+      try {
+        evaluation = extractJsonFromText(rawContent)
+      } catch (parseError) {
+        console.error("Error parsing LLM response:", parseError)
+      }
+
+      const isCorrect = evaluation.is_correct ?? (evaluation.score >= 0.7)
+
       const { data: masteryData, error: masteryError } = await supabaseClient
         .rpc('update_mastery_level', {
           user_uuid: userId,
@@ -122,7 +146,6 @@ serve(async (req) => {
         console.error('Error updating mastery:', masteryError)
       }
 
-      // Update streak
       if (isCorrect) {
         const { error: streakError } = await supabaseClient
           .rpc('update_user_streak', {
@@ -160,3 +183,4 @@ serve(async (req) => {
     )
   }
 })
+
