@@ -45,7 +45,7 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
     // Small timeout to ensure state updates before search
     setTimeout(() => {
       searchVideo(defaultLevel);
-    }, 100);
+    }, 1000);
   }, [topicTitle, userMasteryLevel]);
 
   const getFallbackVideo = (level: string) => {
