@@ -28,6 +28,7 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  // Determine default level based on user mastery
   const getDefaultLevel = (mastery: number) => {
     if (mastery === 0) return 'beginner';
     if (mastery < 0.3) return 'beginner';
@@ -48,7 +49,9 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
     }, 1000);
   }, [topicTitle, userMasteryLevel]);
 
+  // Add fallback videos for different levels
   const getFallbackVideo = (level: string) => {
+    // Randomly select one of the three videos for each level
     const getRandomVideo = (videos: string[]) => {
       const randomIndex = Math.floor(Math.random() * videos.length);
       return videos[randomIndex];
@@ -57,7 +60,6 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
     // Extract video ID from YouTube URL
     const extractVideoId = (url: string) => {
       console.log('Extracting video ID from URL:', url);
-      // Handle different YouTube URL formats
       const regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/;
       const match = url.match(regExp);
       const videoId = (match && match[2].length === 11) ? match[2] : url;
@@ -121,8 +123,7 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
       'https://www.youtube.com/watch?v=fGFh-LHD874',
       'https://www.youtube.com/watch?v=oSRRXm-N0Jg'
     ].map(extractVideoId);
-
-    
+  
     // Trigonometry videos
     const trigonometryBeginnerVideos = [
       'https://www.youtube.com/watch?v=Jsiy4TxgIME',
@@ -203,7 +204,6 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
       videoId = getRandomVideo(intermediateVideos);
       console.log('Selected intermediate video ID:', videoId);
     } else {
-      // For advanced and expert levels
       videoId = getRandomVideo(advancedVideos);
       console.log('Selected advanced video ID:', videoId);
     }
@@ -218,13 +218,11 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
     try {
       console.log('Searching for video:', { topic: topicTitle, level });
       throw new Error('Using direct fallback videos');
-    
     } catch (error) {
       console.error('Error searching video:', error);
-      
-      // Use our custom fallback videos instead of showing error
       const fallbackVideoId = getFallbackVideo(level);
       console.log('Using fallback video ID:', fallbackVideoId);
+      
       const fallbackVideo = {
         title: `${topicTitle} - Educational Tutorial (${level})`,
         videoId: fallbackVideoId,
@@ -232,10 +230,7 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
         duration: '10-15 minutes'
       };
       
-      // Set the video recommendation state with our fallback video
       setVideoRecommendation(fallbackVideo);
-      
-      // Log the complete video recommendation for debugging
       console.log('Setting video recommendation:', fallbackVideo);
     } finally {
       setLoading(false);
@@ -310,7 +305,7 @@ const YouTubeVideoPlayer = ({ topicTitle, userMasteryLevel, onVideoWatched }: Yo
               {/* Video Player */}
               <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-lg">
                 <iframe
-                  key={videoRecommendation.videoId} // Add key prop to force re-render when videoId changes
+                  key={videoRecommendation.videoId} 
                   width="100%"
                   height="100%"
                   src={`https://www.youtube.com/embed/${videoRecommendation.videoId}?rel=0&modestbranding=1`}
