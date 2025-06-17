@@ -1,11 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const SUPABASE_URL = "https://ohznfrzhmvdwgydjtxdf.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9oem5mcnpobXZkd2d5ZGp0eGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMjY2NjIsImV4cCI6MjA2MzYwMjY2Mn0.PBhkUfE3W8qachESo2_EE2JvsC620iOtOVmVJecVaMc";
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error("Supabase env vars are missing");
-}
-
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
