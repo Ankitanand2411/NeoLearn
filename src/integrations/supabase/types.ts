@@ -12,7 +12,9 @@ export type Database = {
       profiles: {
         Row: {
           avatar: string | null
+          avatar_url: string | null
           created_at: string
+          full_name: string | null
           id: string
           updated_at: string
           user_id: string
@@ -20,7 +22,9 @@ export type Database = {
         }
         Insert: {
           avatar?: string | null
+          avatar_url?: string | null
           created_at?: string
+          full_name?: string | null
           id?: string
           updated_at?: string
           user_id: string
@@ -28,7 +32,9 @@ export type Database = {
         }
         Update: {
           avatar?: string | null
+          avatar_url?: string | null
           created_at?: string
+          full_name?: string | null
           id?: string
           updated_at?: string
           user_id?: string
@@ -251,7 +257,15 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      leaderboard_top5: {
+        Row: {
+          avatar: string | null
+          avg_mastery: number | null
+          user_id: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       update_mastery_level: {
