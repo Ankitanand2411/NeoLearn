@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -23,6 +22,7 @@ const TopicPlayer = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [userMasteryLevel, setUserMasteryLevel] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [sidebarWidth, setSidebarWidth] = useState(260);
 
   const steps = ['Watch Video', 'Personalized Explanation', 'Take Adaptive Quiz'];
   const stepIcons = [Play, BookOpen, Brain];
@@ -240,9 +240,12 @@ const TopicPlayer = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20">
-        <Navbar />
-        <div className="pt-20 flex items-center justify-center min-h-screen">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 flex">
+        <Navbar onSidebarWidthChange={setSidebarWidth} />
+        <div
+          className="pt-20 flex-1 flex justify-center items-center min-h-screen"
+          style={{ marginLeft: sidebarWidth, transition: 'margin-left 0.2s' }}
+        >
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
         </div>
       </div>
@@ -251,9 +254,12 @@ const TopicPlayer = () => {
 
   if (!topic) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20">
-        <Navbar />
-        <div className="pt-20 flex items-center justify-center min-h-screen">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 flex">
+        <Navbar onSidebarWidthChange={setSidebarWidth} />
+        <div
+          className="pt-20 flex-1 flex justify-center items-center min-h-screen"
+          style={{ marginLeft: sidebarWidth, transition: 'margin-left 0.2s' }}
+        >
           <Card className="p-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Topic not found</h2>
             <Button onClick={() => navigate('/learn')}>Return to Learning</Button>
@@ -264,66 +270,72 @@ const TopicPlayer = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20">
-      <Navbar />
-      
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="pt-20 container mx-auto px-4 py-8 max-w-4xl"
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 flex">
+      <Navbar onSidebarWidthChange={setSidebarWidth} />
+      <div
+        className="pt-20 flex-1 flex justify-center px-2"
+        style={{
+          marginLeft: sidebarWidth,
+          transition: 'margin-left 0.2s',
+        }}
       >
-        {/* Header */}
-        <motion.div variants={itemVariants} className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/learn')}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Topics
-          </Button>
-          
-          <Card className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-0 shadow-xl">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <span className="text-4xl">{topic?.icon}</span>
-                  <div>
-                    <h1 className="text-3xl font-bold text-white">{topic?.title}</h1>
-                    <p className="text-indigo-100 text-lg">
-                      Your mastery: {Math.round(userMasteryLevel * 100)}% • {topic?.estimated_time} min
-                    </p>
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="w-full max-w-4xl px-4 py-8"
+        >
+          {/* Header, Progress, Main Content */}
+          <motion.div variants={itemVariants} className="mb-6">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/learn')}
+              className="mb-4"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Topics
+            </Button>
+            
+            <Card className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-0 shadow-xl">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <span className="text-4xl">{topic?.icon}</span>
+                    <div>
+                      <h1 className="text-3xl font-bold text-white">{topic?.title}</h1>
+                      <p className="text-indigo-100 text-lg">
+                        Your mastery: {Math.round(userMasteryLevel * 100)}% • {topic?.estimated_time} min
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        {/* Progress */}
-        <motion.div variants={itemVariants} className="mb-6">
-          <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-3">
-                  {React.createElement(stepIcons[currentStep], { className: "h-5 w-5" })}
-                  <span className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                    Step {currentStep + 1} of {steps.length}: {steps[currentStep]}
+          <motion.div variants={itemVariants} className="mb-6">
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-3">
+                    {React.createElement(stepIcons[currentStep], { className: "h-5 w-5" })}
+                    <span className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                      Step {currentStep + 1} of {steps.length}: {steps[currentStep]}
+                    </span>
+                  </div>
+                  <span className="text-lg text-gray-500 dark:text-gray-400">
+                    {Math.round(progress)}% Complete
                   </span>
                 </div>
-                <span className="text-lg text-gray-500 dark:text-gray-400">
-                  {Math.round(progress)}% Complete
-                </span>
-              </div>
-              <Progress value={progress} className="h-3" />
-            </CardContent>
-          </Card>
-        </motion.div>
+                <Progress value={progress} className="h-3" />
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        {/* Main Content */}
-        {renderStep()}
-      </motion.div>
+          {/* Main Content */}
+          {renderStep()}
+        </motion.div>
+      </div>
     </div>
   );
 };
