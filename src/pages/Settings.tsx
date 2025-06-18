@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -9,10 +10,12 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Moon, Sun, Shield, Bell, User, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const Settings = () => {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { user, signOut } = useAuth();
+  const [sidebarWidth, setSidebarWidth] = useState(260);
 
   const handleDeleteAccount = () => {
     toast.error('Account deletion is not available in demo mode');
@@ -42,15 +45,23 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20">
-      <Navbar />
-      
+    <div className="flex min-h-screen">
+      <Navbar onSidebarWidthChange={setSidebarWidth} />
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-20 container mx-auto px-4 py-8"
+        className="pt-20 container mx-auto px-4 py-8 flex-1"
+        style={{
+          marginLeft: sidebarWidth,
+          transition: 'margin-left 0.2s',
+        }}
       >
+        {/* Top right theme toggle */}
+        <div className="flex justify-end items-center w-full absolute right-0 top-0 pr-8 pt-6 z-10">
+          <ThemeToggle />
+        </div>
+
         {/* Header */}
         <motion.div variants={itemVariants} className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -61,10 +72,11 @@ const Settings = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto">
+        {/* Unified alignment for settings cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Appearance Settings */}
           <motion.div variants={itemVariants} className="h-full">
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg h-full">
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg min-h-[340px] flex flex-col">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   {isDarkMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
@@ -74,7 +86,7 @@ const Settings = () => {
                   Customize the look and feel of your app
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 flex-1 flex flex-col">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="dark-mode" className="text-base">
@@ -91,7 +103,7 @@ const Settings = () => {
                   />
                 </div>
                 
-                <div className="p-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg">
+                <div className="p-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg mt-auto">
                   <div className="flex items-center space-x-2 mb-2">
                     <span className="text-lg">🎨</span>
                     <span className="font-semibold">Theme Preview</span>
@@ -106,7 +118,7 @@ const Settings = () => {
 
           {/* Notifications */}
           <motion.div variants={itemVariants} className="h-full">
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg h-full">
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg min-h-[340px] flex flex-col">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Bell className="h-5 w-5" />
@@ -116,7 +128,7 @@ const Settings = () => {
                   Manage your notification preferences
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 flex-1 flex flex-col">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="learning-reminders" className="text-base">
@@ -141,7 +153,7 @@ const Settings = () => {
                   <Switch id="achievement-notifications" defaultChecked />
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-auto">
                   <div className="space-y-0.5">
                     <Label htmlFor="weekly-progress" className="text-base">
                       Weekly Progress
@@ -158,7 +170,7 @@ const Settings = () => {
 
           {/* Account Settings */}
           <motion.div variants={itemVariants} className="h-full">
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg h-full">
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg min-h-[340px] flex flex-col">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <User className="h-5 w-5" />
@@ -168,7 +180,7 @@ const Settings = () => {
                   Manage your account settings
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 flex-1 flex flex-col">
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Email</div>
                   <div className="font-medium">{user?.email}</div>
@@ -184,7 +196,7 @@ const Settings = () => {
 
                 <Button
                   onClick={() => window.location.href = '/profile'}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 mt-auto"
                 >
                   Edit Profile
                 </Button>
@@ -194,7 +206,7 @@ const Settings = () => {
 
           {/* Privacy & Security */}
           <motion.div variants={itemVariants} className="h-full">
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg h-full">
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg min-h-[340px] flex flex-col">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Shield className="h-5 w-5" />
@@ -204,7 +216,7 @@ const Settings = () => {
                   Control your privacy and security settings
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 flex-1 flex flex-col">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="analytics" className="text-base">
@@ -229,7 +241,7 @@ const Settings = () => {
                   <Switch id="personalization" defaultChecked />
                 </div>
 
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-600 mt-auto">
                   <Button
                     onClick={handleDeleteAccount}
                     variant="destructive"
@@ -257,9 +269,9 @@ const Settings = () => {
                 Your AI-powered learning companion
               </p>
               <div className="flex items-center justify-center space-x-6 text-sm text-blue-100">
-                <span>© 2025 Lanzers</span>
-          
-                <span>Made with 🤍 from Lanzers</span>
+                <span>© 2024 NeoLearn</span>
+                <span>•</span>
+                <span>Made with ❤️ for learners</span>
               </div>
             </CardContent>
           </Card>
