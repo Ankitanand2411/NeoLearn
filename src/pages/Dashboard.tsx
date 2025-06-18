@@ -7,9 +7,11 @@ import Navbar from '@/components/Navbar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Trophy, Flame, TrendingUp } from 'lucide-react';
+import { BookOpen, Trophy, Flame, TrendingUp, Bolt } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Topic } from '@/types/Topic';
+import Leaderboard from "@/components/Leaderboard";
+import ThemeToggle from '@/components/ThemeToggle';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -21,13 +23,26 @@ const Dashboard = () => {
     currentStreak: 0,
     badges: 0
   });
+  const [userProfile, setUserProfile] = useState<{ full_name?: string; username?: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarWidth, setSidebarWidth] = useState(260);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       if (!user) return;
 
       try {
+        // Fetch user profile
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name, username')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profileData) {
+          setUserProfile(profileData);
+        }
+
         // Fetch total topics count
         const { data: topicsData } = await supabase
           .from('topics')
@@ -84,6 +99,16 @@ const Dashboard = () => {
     fetchDashboardData();
   }, [user]);
 
+  const getDisplayName = () => {
+    if (userProfile?.full_name) {
+      return userProfile.full_name;
+    }
+    if (userProfile?.username) {
+      return userProfile.username;
+    }
+    return user?.email?.split('@')[0] || 'User';
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -105,9 +130,15 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20">
-        <Navbar />
-        <div className="pt-20 flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen">
+        <Navbar onSidebarWidthChange={setSidebarWidth} />
+        <div
+          className="pt-20 flex items-center justify-center min-h-screen flex-1"
+          style={{
+            marginLeft: sidebarWidth,
+            transition: 'margin-left 0.2s',
+          }}
+        >
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
         </div>
       </div>
@@ -115,19 +146,27 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20">
-      <Navbar />
-      
+    <div className="flex min-h-screen">
+      <Navbar onSidebarWidthChange={setSidebarWidth} />
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pt-20 container mx-auto px-4 py-8"
+        className="pt-20 container mx-auto px-4 py-8 flex-1"
+        style={{
+          marginLeft: sidebarWidth,
+          transition: 'margin-left 0.2s',
+        }}
       >
+        {/* Top right theme toggle */}
+        <div className="flex justify-end items-center w-full absolute right-0 top-0 pr-8 pt-6 z-10">
+          <ThemeToggle />
+        </div>
+
         {/* Welcome Section */}
         <motion.div variants={itemVariants} className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            Welcome back, {user?.email?.split('@')[0]}! 🎉
+            Welcome back, {getDisplayName()}! 🎉
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300">
             Ready to continue your learning journey?
@@ -231,10 +270,13 @@ const Dashboard = () => {
         )}
 
         {/* Quick Actions */}
-        <motion.div variants={itemVariants}>
+        <motion.div variants={itemVariants} className="mb-14">
           <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-0 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-xl">Quick Actions</CardTitle>
+              <CardTitle className="text-2xl flex gap-2 items-center">
+                <Bolt className="text-yellow-500" size={28} />
+                Quick Actions
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -265,6 +307,11 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Leaderboard Section */}
+        <motion.div variants={itemVariants}>
+          <Leaderboard />
         </motion.div>
       </motion.div>
     </div>
